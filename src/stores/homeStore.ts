@@ -2,8 +2,10 @@
 import { HomeAPI } from "@/api/HomeAPI";
 import type { Banner } from "@/types/Banner";
 import type { Brands } from "@/types/Brands";
+import type { Category } from "@/types/Category ";
 import type { Goods } from "@/types/Goods";
 import type { HotRecommends } from "@/types/hotRecommends";
+import type { Special } from "@/types/Special";
 import type { Status } from "@/types/Status";
 
 type State = {
@@ -27,6 +29,16 @@ type State = {
     result: HotRecommends[];
     status: Status;
   };
+  // 产品区块
+  goods: {
+    result: Category[];
+    status: Status;
+  };
+  // 最新专题
+  specials: {
+    result: Special[];
+    status: Status;
+  };
 };
 type Getters = {};
 type Actions = {
@@ -38,6 +50,10 @@ type Actions = {
   getFreshGoods(limit?: number): Promise<void>;
   // 获取人气推荐
   getHotRecommends(): Promise<void>;
+  // 获取产品区块
+  getGoods(): Promise<void>;
+  // 获取最新专题
+  getSpecial(limit?: number): Promise<void>;
 };
 export const useHomeStore = defineStore<"home", State, Getters, Actions>(
   "home",
@@ -58,6 +74,16 @@ export const useHomeStore = defineStore<"home", State, Getters, Actions>(
       },
       // 人气推荐
       hotRecommends: {
+        result: [],
+        status: "idle",
+      },
+      // 产品区块
+      goods: {
+        result: [],
+        status: "idle",
+      },
+      // 最新专题
+      specials: {
         result: [],
         status: "idle",
       },
@@ -121,6 +147,33 @@ export const useHomeStore = defineStore<"home", State, Getters, Actions>(
           this.hotRecommends.status = "success";
         } catch (err) {
           this.hotRecommends.status = "error";
+        }
+      },
+      // 产品区块
+      async getGoods() {
+        this.goods.status = "loading";
+
+        try {
+          let response = await HomeAPI.getGoods();
+          this.goods.result = response.result;
+          this.goods.status = "success";
+        } catch (e) {
+          this.goods.status = "error";
+        }
+      },
+      // 最新专题
+      async getSpecial(limit = 3) {
+        this.specials.status = "loading";
+        // 捕获异常
+        try {
+          // 发送请求
+          let response = await HomeAPI.getSpecial(limit);
+          // 保存数据
+          this.specials.result = response.result;
+          // 更新状态
+          this.specials.status = "loading";
+        } catch (e) {
+          this.specials.status = "error";
         }
       },
     },

@@ -1,8 +1,10 @@
 import type { Banner } from "@/types/Banner";
 import type { Brands } from "@/types/Brands";
+import type { Category } from "@/types/Category ";
 import type { Goods } from "@/types/Goods";
 import type { HotRecommends } from "@/types/hotRecommends";
 import type { XtxResponse } from "@/types/Response";
+import type { Special } from "@/types/Special";
 import XtxRequestManager from "@/utils/XtxRequestManager";
 
 export class HomeAPI {
@@ -36,6 +38,20 @@ export class HomeAPI {
   static getHotRecommends() {
     return XtxRequestManager.instance.request<XtxResponse<HotRecommends[]>>({
       url: "/home/hot",
+    });
+  }
+  // 产品区块
+  static getGoods() {
+    return XtxRequestManager.instance.request<XtxResponse<Category[]>>({
+      url: "/home/goods",
+    });
+  }
+
+  // 最新专题
+  static getSpecial(limit: number) {
+    return XtxRequestManager.instance.request<XtxResponse<Special[]>>({
+      url: "/home/special",
+      data: { limit },
     });
   }
 }

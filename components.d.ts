@@ -6,10 +6,15 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     FreshGoods: typeof import('./src/views/home/component/FreshGoods.vue')['default']
+    GoodsItem: typeof import('./src/views/home/component/GoodsItem.vue')['default']
     HomeBanner: typeof import('./src/views/home/component/HomeBanner.vue')['default']
     HomeCategory: typeof import('./src/views/home/component/HomeCategory.vue')['default']
+    HomeGoods: typeof import('./src/views/home/component/HomeGoods.vue')['default']
     HomePage: typeof import('./src/views/home/HomePage.vue')['default']
     HomePanel: typeof import('./src/views/home/component/HomePanel.vue')['default']
+    HomeSkeleton: typeof import('./src/views/home/component/HomeSkeleton.vue')['default']
+    HomeSpecial: typeof import('./src/views/home/component/HomeSpecial.vue')['default']
+    HotBrands: typeof import('./src/views/home/component/HotBrands.vue')['default']
     HotRecommends: typeof import('./src/views/home/component/HotRecommends.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

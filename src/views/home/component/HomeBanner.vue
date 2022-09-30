@@ -4,7 +4,6 @@ import { useHomeStore } from "@/stores/homeStore";
 
 // 获取用于存储首页状态的 store 对象
 const homeStore = useHomeStore();
-console.log(homeStore, "------------------------------------");
 
 // 获取首页轮播图状态
 const { banners } = storeToRefs(homeStore);
