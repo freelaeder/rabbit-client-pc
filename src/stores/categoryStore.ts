@@ -17,6 +17,20 @@ type State = {
     result: Banner[];
     status: Status;
   };
+  // 一级分类具体信息
+  topCategories: {
+    result: {
+      [id: string]: Category;
+    };
+    status: Status;
+  };
+  //  二级分类 筛选条件
+  subCategoryFilters: {
+    result: {
+      [id: string]: Category;
+    };
+    status: Status;
+  };
 };
 //定义Getters 对象的类型
 type Getters = {
@@ -35,6 +49,10 @@ type Actions = {
   getCategories(): Promise<void>;
   toggle(id: string, isOpen: boolean): void;
   getBanners(): Promise<void>;
+  // 根据一级分类 id 获取分类信息
+  getTopCategoryById(id: string): Promise<void>;
+  // 根据二级分类 id 获取该分类下的商品的筛选条件
+  getSubCategoryFilters(id: string): Promise<void>;
 };
 //创建categoryStore 对象，返回用于获取创建categoryStore对象的方法
 export const useCategoryStore = defineStore<
@@ -52,6 +70,16 @@ export const useCategoryStore = defineStore<
     },
     banners: {
       result: [],
+      status: "idle",
+    },
+    // 一级分类信息
+    topCategories: {
+      result: {},
+      status: "idle",
+    },
+    // 筛选条件
+    subCategoryFilters: {
+      result: {},
       status: "idle",
     },
   }),
@@ -125,6 +153,37 @@ export const useCategoryStore = defineStore<
         this.banners.status = "success";
       } catch (e) {
         this.banners.status = "error";
+      }
+    },
+    // 根据一级分类 id 获取分类信息
+    async getTopCategoryById(id) {
+      // 更新加载状态
+      this.topCategories.status = "loading";
+      // 捕获错误
+      try {
+        // 发送请求根据一级分类 id 获取分类信息
+        let response = await CategoryAPI.getTopCategoryById(id);
+        // 存储一级分类信息
+        this.topCategories.result[response.result.id] = response.result;
+        // 更新加载状态
+        this.topCategories.status = "success";
+      } catch (e) {
+        // 更新加载状态
+        this.topCategories.status = "error";
+      }
+    },
+    // 二级分类筛选条件
+    async getSubCategoryFilters(id) {
+      this.subCategoryFilters.status = "loading";
+      try {
+        // 发送请求
+        let response = await CategoryAPI.getSubCategoryFilters(id);
+        // 存储
+        this.subCategoryFilters.result[response.result.id] = response.result;
+        // 更新状态
+        this.subCategoryFilters.status = "success";
+      } catch (e) {
+        this.subCategoryFilters.status = "error";
       }
     },
   },

@@ -2,6 +2,8 @@ import { createRouter, createWebHashHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
+  // 单页面切换时 回到 页面顶部
+  scrollBehavior: () => ({ top: 1 }),
   routes: [
     {
       path: "/",
@@ -11,14 +13,14 @@ const router = createRouter({
           path: "",
           component: () => import("@/views/home/HomePage.vue"),
         },
-          {
-            path: "category/:id",
-            component: () => import("@/views/category/TopCategoryPage.vue")
-          },
-          {
-            path: "category/sub/:top/:sub",
-            component: () => import("@/views/category/SubCategoryPage.vue")
-          },
+        {
+          path: "category/:id",
+          component: () => import("@/views/category/TopCategoryPage.vue"),
+        },
+        {
+          path: "category/sub/:top/:sub",
+          component: () => import("@/views/category/SubCategoryPage.vue"),
+        },
       ],
     },
   ],
