@@ -4,6 +4,8 @@ import { CategoryAPI } from "@/api/CategoryAPI";
 import { defineStore } from "pinia";
 import type { Banner } from "@/types/Banner";
 import { HomeAPI } from "@/api/HomeAPI";
+import type { Pagination } from "@/types/Response";
+import type { Goods, GoodsRequestParams } from "@/types/Goods";
 
 //定义Store对象中状态的类型
 type State = {
@@ -31,6 +33,11 @@ type State = {
     };
     status: Status;
   };
+  // 二级分类商品
+  categoryGoods: {
+    status: Status;
+    result: Pagination<Goods>;
+  };
 };
 //定义Getters 对象的类型
 type Getters = {
@@ -53,6 +60,11 @@ type Actions = {
   getTopCategoryById(id: string): Promise<void>;
   // 根据二级分类 id 获取该分类下的商品的筛选条件
   getSubCategoryFilters(id: string): Promise<void>;
+  // 获取二级分类商品
+  getCategoryGoods(
+    categoryId: GoodsRequestParams["categoryId"],
+    reqParams?: Partial<Omit<GoodsRequestParams, "categoryId">>
+  ): Promise<void>;
 };
 //创建categoryStore 对象，返回用于获取创建categoryStore对象的方法
 export const useCategoryStore = defineStore<
@@ -80,6 +92,17 @@ export const useCategoryStore = defineStore<
     // 筛选条件
     subCategoryFilters: {
       result: {},
+      status: "idle",
+    },
+    // 二级分类商品
+    categoryGoods: {
+      result: {
+        page: 0,
+        pages: 0,
+        pageSize: 0,
+        counts: 0,
+        items: [],
+      },
       status: "idle",
     },
   }),
@@ -184,6 +207,52 @@ export const useCategoryStore = defineStore<
         this.subCategoryFilters.status = "success";
       } catch (e) {
         this.subCategoryFilters.status = "error";
+      }
+    },
+    // 获取二级分类商品
+    async getCategoryGoods(categoryId, reqParams) {
+      // 数据加载完毕 不在加载
+      if (this.categoryGoods.status === "finished") return;
+
+      //更新加载状态
+      this.categoryGoods.status = "loading";
+      // 捕获错误
+      try {
+        // 发送请求
+        let response = await CategoryAPI.getCategoryGoods(
+          categoryId,
+          reqParams
+        );
+        // 保存
+        // this.categoryGoods.result = response.result;
+        if (reqParams?.page === 1) {
+          //  初次保存
+          this.categoryGoods.result = response.result;
+        } else {
+          // 累计状态
+          this.categoryGoods.result = {
+            ...response.result,
+            items: [
+              ...this.categoryGoods.result.items,
+              ...response.result.items,
+            ],
+          };
+        }
+        // 判断是不是最后一页
+        if (
+          reqParams?.page === response.result.page ||
+          response.result.pages === 0
+        ) {
+          // 更新加载状态
+          this.categoryGoods.status = "finished";
+        } else {
+          this.categoryGoods.status = "success";
+        }
+
+        // 更新状态
+        // this.categoryGoods.status = "success";
+      } catch (e) {
+        this.categoryGoods.status = "error";
       }
     },
   },

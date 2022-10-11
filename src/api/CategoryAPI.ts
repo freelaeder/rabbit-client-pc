@@ -1,6 +1,7 @@
 import XtxRequestManager from "@/utils/XtxRequestManager";
-import type { XtxResponse } from "@/types/Response";
+import type { Pagination, XtxResponse } from "@/types/Response";
 import type { Category } from "@/types/Category ";
+import type { Goods, GoodsRequestParams } from "@/types/Goods";
 export class CategoryAPI {
   // 获取导航分类数据
   static getCategories() {
@@ -21,6 +22,20 @@ export class CategoryAPI {
     return XtxRequestManager.instance.request<XtxResponse<Category>>({
       url: "/category/sub/filter",
       data: { id },
+    });
+  }
+  //二级商品分类列表
+  static getCategoryGoods(
+    categoryId: GoodsRequestParams["categoryId"],
+    reqParams?: Partial<Omit<GoodsRequestParams, "categoryId">>
+  ) {
+    return XtxRequestManager.instance.request<
+      XtxResponse<Pagination<Goods>>,
+      Partial<GoodsRequestParams>
+    >({
+      url: "/category/goods",
+      method: "post",
+      data: { categoryId, ...reqParams },
     });
   }
 }
