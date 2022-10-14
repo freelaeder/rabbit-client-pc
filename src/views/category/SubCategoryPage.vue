@@ -29,7 +29,10 @@ function getReqParams() {
 // 筛选条件 排序条件 发生变化 重新获取商品列表
 function sendRequest() {
   // 筛选条件，排序条件发生变化 重置 页码
-
+  // 筛选条件、排序条件发生变化 重置页码
+  pageParams.page = 1;
+  // 重置请求状态
+  categoryGoods.value.status = "loading";
   // 合并请求参数
   // 发送请求
   getCategoryGoods(route.params.sub as string, getReqParams());
@@ -49,8 +52,17 @@ getCategoryGoods(route.params.sub as string, getReqParams());
 
 // 路由变化 重新获取商品列表
 onBeforeRouteUpdate((to) => {
+  // 重置筛选条件
+  filterParams = {};
+  // 重置排序条件
+  sortParams = {};
+  // 重置页码
+  pageParams.page = 1;
+  // 重置请求加载状态
+  categoryGoods.value.status = "loading";
   // 发送请求
   getCategoryGoods(to.params.sub as string, getReqParams());
+  console.log("00999");
 });
 </script>
 <template>

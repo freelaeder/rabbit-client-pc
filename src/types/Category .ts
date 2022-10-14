@@ -10,6 +10,9 @@ export interface Category {
   goods: Goods[] | undefined;
   saleProperties: SaleProperty[];
   brands: Brands[];
+  // 添加属性
+  layer: number;
+  parent: Category | undefined;
 }
 
 interface SaleProperty {
