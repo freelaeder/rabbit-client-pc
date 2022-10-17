@@ -9,7 +9,12 @@ type States = {
     result: Goods;
   };
 };
-
+export interface Data {
+  price: string;
+  oldPrice: string;
+  inventory: number;
+  skuId: string;
+}
 type Getters = {
   // 获取商品图片
   mainPictures(): string[];

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useGoodsStore } from "@/stores/goodsStore";
+import { useGoodsStore, type Data } from "@/stores/goodsStore";
 import { onBeforeRouteUpdate } from "vue-router";
 
 // 用于储存 商品信息的store对象
@@ -16,6 +16,12 @@ getGoodsInfo(route.params.id as string);
 // 路由切换
 // 向服务器端发送请求获取商品详情信息
 onBeforeRouteUpdate((to) => getGoodsInfo(to.params.id as string));
+function complete(data: Data) {
+  console.log(data, "-----data");
+}
+function uncomplete() {
+  console.log("没有传递", "-----data");
+}
 </script>
 
 <template>
@@ -40,6 +46,9 @@ onBeforeRouteUpdate((to) => getGoodsInfo(to.params.id as string));
           <GoodsSku
             :skus="goodsInfo.result.skus"
             :specs="goodsInfo.result.specs"
+            sku-id="1369155864430120962"
+            @complete="complete"
+            @uncomplete="uncomplete"
           />
         </div>
       </div>

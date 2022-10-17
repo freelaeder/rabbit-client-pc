@@ -1,10 +1,17 @@
 <!-- src/views/goods/components/GoodsSku.vue -->
 <script setup lang="ts">
 // Spec: 在页面中展示的规格状态的类型
+// http://127.0.0.1:8080/#/goods/1369155859933827074
 import type { Sku, Spec } from "@/types/Goods";
 import bwPowerSet from "@/vendors/power-set";
+import type { Data } from "@/stores/goodsStore";
 // specs: 在页面中展示的规格状态
-const props = defineProps<{ specs: Spec[]; skus: Sku[] }>();
+const props = defineProps<{ specs: Spec[]; skus: Sku[]; skuId: string }>();
+// 定义当前页面触发的自定义事件
+const emit = defineEmits<{
+  (e: "complete", data: Data): void;
+  (e: "uncomplete"): void;
+}>();
 
 // 定义规格选项 对应的 页面状态类型
 interface UIStatus {
@@ -53,6 +60,8 @@ function updateSelected(index: number, i: number) {
   }
   // 用户选择规格后更新规格的禁用状态
   getSelected();
+  updateDisabled();
+  sendGoodsInfoToParent();
 }
 // 规格 查询对象的类型
 interface PathMap {
@@ -102,16 +111,51 @@ const result = createPathMap();
 function updateDisabled() {
   // 遍历页面中显示的规格数据 规格种类
   props.specs.forEach((spec, index) => {
+    // 获取用户选择的规格数组
+    const selected = getSelected();
     // 遍历页面中显示的 规格数据 规格选项
     spec.values.forEach((value, i) => {
+      // 检测当前遍历的规格是否已经是选中的
+      if (res[index][i].selected) return;
+      // 将当前遍历的规格 插入到 selected 数组中
+      selected[index] = value.name;
+      // 得到 匹配的key
+      const key = selected.filter((name) => name).join("_");
+      console.log(key);
+
       // 判断当前规格名称是否在 规格查询对象中
       // 不在 设置为 true
       // 在 设置为 false
-      res[index][i].disabled = !(value.name in result);
+      res[index][i].disabled = !(key in result);
     });
   });
 }
 updateDisabled();
+
+// 设置规格的默认选择效果
+function setDefaultSelected() {
+  // 是否传递skuid
+  if (typeof props.skuId !== "undefined") {
+    // 查找默认选中的规格对象 ，获取规格名称
+    const selected = props.skus.find((sku) => sku.id === props.skuId);
+    console.log(selected, "selected");
+    // 没有默认选择的规格对象 return
+    if (typeof selected === "undefined") return;
+    // 获取默认选中的 规格与名称数组
+    const names = selected.specs.map((spec) => spec.valueName);
+    // 遍历 页面中的 规格
+    props.specs.forEach((spec, index) => {
+      // 遍历页面中展示的每一个规格
+      spec.values.forEach((value, i) => {
+        if (names.includes(value.name)) {
+          res[index][i].selected = true;
+        }
+      });
+    });
+  }
+}
+// 设置规格的默认选中状态
+setDefaultSelected();
 
 //用户选择的规格名称数组
 function getSelected() {
@@ -127,9 +171,32 @@ function getSelected() {
       names[index] = undefined;
     }
   });
-  console.log(names, "----------------00");
+  // console.log(names, "----------------00");
 
   return names;
+}
+
+// 先父组件 传递商品信息
+function sendGoodsInfoToParent() {
+  // 获取用户选择的规格名称数组
+  const selected = getSelected().filter((item) => item);
+  // 判断用户是否选择了完整的规格信息
+  if (selected.length === props.specs.length) {
+    const skuId = result[selected.join("_")]!;
+    // 获取skuid
+    const sku = props.skus.find((sku) => sku.id === skuId);
+    console.log("sku----", sku);
+    if (typeof sku !== "undefined") {
+      emit("complete", {
+        price: sku.price,
+        oldPrice: sku.oldPrice,
+        inventory: sku.inventory,
+        skuId: skuId,
+      });
+    }
+  } else {
+    emit("uncomplete");
+  }
 }
 </script>
 
