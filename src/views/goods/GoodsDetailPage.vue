@@ -6,7 +6,7 @@ import { onBeforeRouteUpdate } from "vue-router";
 
 const goodsStore = useGoodsStore();
 // 获取发送请求的方法
-const { getGoodsInfo } = goodsStore;
+const { getGoodsInfo, updateGoods } = goodsStore;
 //获取路由对象
 const route = useRoute();
 // 获取商品信息
@@ -22,6 +22,10 @@ function complete(data: Data) {
 function uncomplete() {
   console.log("没有传递", "-----data");
 }
+// 用户选择的skuid
+const skuId = ref<string | undefined>();
+// 定义选择的数量
+const count = ref(1);
 </script>
 
 <template>
@@ -47,20 +51,39 @@ function uncomplete() {
             :skus="goodsInfo.result.skus"
             :specs="goodsInfo.result.specs"
             sku-id="1369155864430120962"
-            @complete="complete"
-            @uncomplete="uncomplete"
+            @complete="
+              updateGoods($event);
+              skuId = $event.skuId;
+            "
+            @uncomplete="skuId = undefined"
           />
+          <!-- 选择组件 -->
+          <XtxNumberBox
+            :max="goodsInfo.result.inventory"
+            label="数量"
+            v-model:count="count"
+          />
+          <!-- 按钮组件 -->
+          <XtxButton type="primary" :style="{ 'margin-top': '20px' }">
+            加入购物车
+          </XtxButton>
         </div>
       </div>
       <!-- 同类商品 -->
+      <GoodsRelevant :goods-id="goodsInfo.result.id"></GoodsRelevant>
       <!-- 商品详情 -->
       <div class="goods-footer">
         <div class="goods-article">
           <!-- 商品+评价 -->
-          <div class="goods-tabs"></div>
+          <!-- 商品+评价 -->
+          <GoodsTab />
         </div>
         <!-- 24热榜 -->
-        <div class="goods-aside"></div>
+        <div class="goods-aside">
+          <GoodsHot :id="goodsInfo.result.id" :type="1" />
+          <GoodsHot :id="goodsInfo.result.id" :type="2" />
+          <GoodsHot :id="goodsInfo.result.id" :type="3" />
+        </div>
       </div>
     </div>
     <div class="container loading-container" v-else>

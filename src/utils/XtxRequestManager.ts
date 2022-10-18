@@ -19,7 +19,10 @@ export default class XtxRequestManager {
   // 私有的只读的用于发送请求的 axios 实例
   private readonly _instance: XtxAxiosInstance;
   // 请求基准地址
-  public static baseUrl: string = "https://apipc-xiaotuxian-front.itheima.net";
+  // 小奶锅
+  // public static baseUrl: string = "https://apipc-xiaotuxian-front.itheima.net";
+  public static baseUrl: string =
+    "https://pcapi-xiaotuxian-front-devtest.itheima.net/";
   // 获取存储用户信息的 store 对象
   private userStore = useUserStore();
 

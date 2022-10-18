@@ -1,12 +1,32 @@
 import { GoodsAPI } from "@/api/GoodsAPI";
 import type { Goods } from "@/types/Goods";
 import type { Status } from "@/types/Status";
-
+// import { result } from "lodash";
+import chunk from "lodash/chunk";
 type States = {
   // 商品信息
   goodsInfo: {
     status: Status;
     result: Goods;
+  };
+  //同类商品
+  releavntGoods: {
+    status: Status;
+    result: Goods[][];
+  };
+  // 榜单
+  hotSaleGoods: {
+    // 加载状态
+    status: Status;
+    // 榜单数据
+    result: {
+      // 24小时榜
+      1: Goods[];
+      // 周榜
+      2: Goods[];
+      // 总榜
+      3: Goods[];
+    };
   };
 };
 export interface Data {
@@ -25,6 +45,12 @@ type Getters = {
 type Actions = {
   // 根据商品id获取商品信息
   getGoodsInfo(id: string): Promise<void>;
+  // 更新商品信息 规格更新
+  updateGoods(data: Data): void;
+  // 获取同类商品
+  getReleavntGoods(arg?: { id?: string; limit?: number }): Promise<void>;
+  // 获取榜单
+  getHotSaleGoods(id: string, type: 1 | 2 | 3, limit: number): Promise<void>;
 };
 
 export const useGoodsStore = defineStore<"Goods", States, Getters, Actions>(
@@ -67,6 +93,20 @@ export const useGoodsStore = defineStore<"Goods", States, Getters, Actions>(
           evaluationInfo: null,
         },
       },
+      // 同类商品
+      releavntGoods: {
+        status: "idle",
+        result: [],
+      },
+      // 榜单
+      hotSaleGoods: {
+        status: "idle",
+        result: {
+          1: [],
+          2: [],
+          3: [],
+        },
+      },
     }),
     getters: {
       // 获取商品图片
@@ -100,6 +140,37 @@ export const useGoodsStore = defineStore<"Goods", States, Getters, Actions>(
         } catch (e) {
           // 更新加载状态
           this.goodsInfo.status = "error";
+        }
+      },
+      // 更新商品信息 规格更新
+      updateGoods(data) {
+        this.goodsInfo.result.price = data.price;
+        this.goodsInfo.result.oldPrice = data.oldPrice;
+        this.goodsInfo.result.inventory = data.inventory;
+      },
+      // 获取同类商品
+      async getReleavntGoods(arg) {
+        this.releavntGoods.status = "loading";
+        try {
+          // 发送请求
+          let response = await GoodsAPI.getRelevantGoods(arg);
+          // 分割数据
+          this.releavntGoods.result = chunk(response.result, 4);
+          //
+          this.releavntGoods.status = "success";
+        } catch (e) {
+          this.releavntGoods.status = "error";
+        }
+      },
+      // 获取榜单
+      async getHotSaleGoods(id, type, limit) {
+        this.hotSaleGoods.status = "loading";
+        try {
+          let response = await GoodsAPI.getHotSaleGoods(id, type, limit);
+          this.hotSaleGoods.result[type] = response.result;
+          this.hotSaleGoods.status = "success";
+        } catch (error) {
+          this.hotSaleGoods.status = "error";
         }
       },
     },
