@@ -1,15 +1,22 @@
 <!-- 商品详情组件: src/views/goods/components/GoodsDetail.vue -->
+
+<script lang="ts" setup>
+import { useGoodsStore } from "@/stores/goodsStore";
+
+const goodsStore = useGoodsStore();
+const { goodsProperties } = storeToRefs(goodsStore);
+</script>
 <template>
   <div class="goods-detail">
     <!-- 属性 -->
     <ul class="attrs">
-      <li>
-        <span class="dt">属性名称</span>
-        <span class="dd">属性值</span>
+      <li v-for="item in goodsProperties.properties" :key="item.name">
+        <span class="dt">{{ item.name }}</span>
+        <span class="dd">{{ item.value }}</span>
       </li>
     </ul>
     <!-- 图片 -->
-    <img src="" alt="" />
+    <img v-for="item in goodsProperties.pictures" :src="item" alt="" />
   </div>
 </template>
 

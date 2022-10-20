@@ -23,6 +23,7 @@ export default class XtxRequestManager {
   // public static baseUrl: string = "https://apipc-xiaotuxian-front.itheima.net";
   public static baseUrl: string =
     "https://pcapi-xiaotuxian-front-devtest.itheima.net/";
+  // "https://mock.boxuegu.com/mock/1175/goods/$%7Bid%7D/evaluate";
   // 获取存储用户信息的 store 对象
   private userStore = useUserStore();
 

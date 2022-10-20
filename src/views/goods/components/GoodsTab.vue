@@ -2,8 +2,12 @@
 <script lang="ts" setup>
 import GoodsDetail from "./GoodsDetail.vue";
 import GoodsComment from "./GoodsComment.vue";
-// 定义显示的组件
+import { useGoodsStore } from "@/stores/goodsStore";
+// 定义显示的组件ff
 const activComponent = ref<"GoodsDetail" | "GoodsComment">("GoodsDetail");
+// 获取评价信息
+const goodsStore = useGoodsStore();
+const { evaluateInfo } = storeToRefs(goodsStore);
 </script>
 <template>
   <div class="goods-tabs">
@@ -17,13 +21,16 @@ const activComponent = ref<"GoodsDetail" | "GoodsComment">("GoodsDetail");
       </a>
       <a href="javascript:" @click="activComponent = 'GoodsComment'">
         商品评价
-        <span>(500+)</span>
+        <span>({{ evaluateInfo.result.evaluateCount }}+)</span>
       </a>
     </nav>
     <!-- 切换内容的地方 -->
-    <component
+    <!-- <component
       :is="activComponent === 'GoodsDetail' ? GoodsDetail : GoodsComment"
-    ></component>
+    ></component> -->
+    <!-- 切换内容的地方 -->
+    <GoodsDetail v-show="activComponent === 'GoodsDetail'" />
+    <GoodsComment v-show="activComponent === 'GoodsComment'" />
   </div>
 </template>
 

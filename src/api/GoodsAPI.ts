@@ -1,5 +1,10 @@
-import type { Goods } from "@/types/Goods";
-import type { XtxResponse } from "@/types/Response";
+import type {
+  Evaluate,
+  EvaluateInfo,
+  EvaluateRequestParams,
+  Goods,
+} from "@/types/Goods";
+import type { Pagination, XtxResponse } from "@/types/Response";
 import XtxRequestManager from "@/utils/XtxRequestManager";
 
 export class GoodsAPI {
@@ -37,6 +42,22 @@ export class GoodsAPI {
     >({
       url: "/goods/hot",
       data: { id, type, limit },
+    });
+  }
+  //获取头部评价信息
+  static getEvaluateInfo(id: string) {
+    return XtxRequestManager.instance.request<XtxResponse<EvaluateInfo>>({
+      url: `https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate`,
+    });
+  }
+  // 商品评价信息列表
+  static getEvaluateList(id: string, reqParams: EvaluateRequestParams) {
+    return XtxRequestManager.instance.request<
+      XtxResponse<Pagination<Evaluate>>,
+      EvaluateRequestParams
+    >({
+      url: `https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate/page`,
+      data: reqParams,
     });
   }
 }

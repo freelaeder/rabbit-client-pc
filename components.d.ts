@@ -5,7 +5,12 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AccountLogin: typeof import('./src/views/login/components/AccountLogin.vue')['default']
     AllSubCategories: typeof import('./src/views/category/components/AllSubCategories.vue')['default']
+    CommentImage: typeof import('./src/views/goods/components/CommentImage.vue')['default']
+    CommentList: typeof import('./src/views/goods/components/CommentList.vue')['default']
+    CommentScreen: typeof import('./src/views/goods/components/CommentScreen.vue')['default']
+    CommentSort: typeof import('./src/views/goods/components/CommentSort.vue')['default']
     FreshGoods: typeof import('./src/views/home/component/FreshGoods.vue')['default']
     GoodsBread: typeof import('./src/views/goods/components/GoodsBread.vue')['default']
     GoodsComment: typeof import('./src/views/goods/components/GoodsComment.vue')['default']
@@ -29,6 +34,11 @@ declare module '@vue/runtime-core' {
     HomeSpecial: typeof import('./src/views/home/component/HomeSpecial.vue')['default']
     HotBrands: typeof import('./src/views/home/component/HotBrands.vue')['default']
     HotRecommends: typeof import('./src/views/home/component/HotRecommends.vue')['default']
+    LoginFooter: typeof import('./src/views/login/components/LoginFooter.vue')['default']
+    LoginForm: typeof import('./src/views/login/components/LoginForm.vue')['default']
+    LoginHeader: typeof import('./src/views/login/components/LoginHeader.vue')['default']
+    LoginPage: typeof import('./src/views/login/LoginPage.vue')['default']
+    MessageLogin: typeof import('./src/views/login/components/MessageLogin.vue')['default']
     Recommends: typeof import('./src/views/category/components/Recommends.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -52,6 +62,7 @@ declare module '@vue/runtime-core' {
     XtxLayout: typeof import('./src/components/XtxLayout.vue')['default']
     XtxMore: typeof import('./src/components/XtxMore.vue')['default']
     XtxNumberBox: typeof import('./src/components/XtxNumberBox.vue')['default']
+    XtxPagination: typeof import('./src/views/goods/components/XtxPagination.vue')['default']
     XtxSkeleton: typeof import('./src/components/XtxSkeleton.vue')['default']
     XtxTopNav: typeof import('./src/components/XtxTopNav.vue')['default']
   }

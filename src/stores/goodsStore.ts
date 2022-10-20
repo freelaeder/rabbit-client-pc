@@ -1,8 +1,15 @@
 import { GoodsAPI } from "@/api/GoodsAPI";
-import type { Goods } from "@/types/Goods";
+import type {
+  Evaluate,
+  EvaluateRequestParams,
+  Goods,
+  GoodsDetailInfo,
+} from "@/types/Goods";
 import type { Status } from "@/types/Status";
+import type { EvaluateInfo } from "@/types/Goods";
 // import { result } from "lodash";
 import chunk from "lodash/chunk";
+import type { Pagination } from "@/types/Response";
 type States = {
   // 商品信息
   goodsInfo: {
@@ -28,6 +35,16 @@ type States = {
       3: Goods[];
     };
   };
+  // 评价头部数据
+  evaluateInfo: {
+    result: EvaluateInfo;
+    status: Status;
+  };
+  // 评价列表
+  evaluateList: {
+    result: Pagination<Evaluate>;
+    status: Status;
+  };
 };
 export interface Data {
   price: string;
@@ -40,6 +57,8 @@ type Getters = {
   mainPictures(): string[];
   // 获取商品基本信息
   baseInfo(): Pick<Goods, "name" | "desc" | "price" | "oldPrice">;
+  // 获取商品详情信息
+  goodsProperties(): GoodsDetailInfo;
 };
 
 type Actions = {
@@ -51,6 +70,10 @@ type Actions = {
   getReleavntGoods(arg?: { id?: string; limit?: number }): Promise<void>;
   // 获取榜单
   getHotSaleGoods(id: string, type: 1 | 2 | 3, limit: number): Promise<void>;
+  // 获取评价头部信息
+  getEvaluateInfo(id: string): Promise<void>;
+  // 获取商品评价列表
+  getEvaluateList(id: string, reqParams: EvaluateRequestParams): Promise<void>;
 };
 
 export const useGoodsStore = defineStore<"Goods", States, Getters, Actions>(
@@ -102,10 +125,35 @@ export const useGoodsStore = defineStore<"Goods", States, Getters, Actions>(
       hotSaleGoods: {
         status: "idle",
         result: {
+          // 24
           1: [],
+          // 周
           2: [],
+          // 总
           3: [],
         },
+      },
+      // 商品评价信息
+      evaluateInfo: {
+        result: {
+          salesCount: 0,
+          praisePercent: "",
+          evaluateCount: 0,
+          hasPictureCount: 0,
+          tags: [],
+        },
+        status: "idle",
+      },
+      // 商品评价列表
+      evaluateList: {
+        result: {
+          page: 0,
+          pages: 0,
+          pageSize: 0,
+          counts: 0,
+          items: [],
+        },
+        status: "idle",
       },
     }),
     getters: {
@@ -123,6 +171,16 @@ export const useGoodsStore = defineStore<"Goods", States, Getters, Actions>(
           oldPrice,
         };
       },
+      // 获取商品详情信息
+      goodsProperties() {
+        return {
+          // 商品详情图片集合
+          pictures: this.goodsInfo.result.details.pictures,
+          // 商品属性集合
+          properties: this.goodsInfo.result.details.properties,
+        };
+      },
+      // 商品评价列表
     },
     actions: {
       // 根据商品id获取商品信息
@@ -171,6 +229,34 @@ export const useGoodsStore = defineStore<"Goods", States, Getters, Actions>(
           this.hotSaleGoods.status = "success";
         } catch (error) {
           this.hotSaleGoods.status = "error";
+        }
+      },
+      // 评价信息头部
+      async getEvaluateInfo(id) {
+        // 更新加载状态
+        this.evaluateInfo.status = "loading";
+        try {
+          // 发送请求获取评价头部信息
+          let response = await GoodsAPI.getEvaluateInfo(id);
+          // 存储评价头部信息
+          this.evaluateInfo.result = response.result;
+          // 更新加载状态
+          this.evaluateInfo.status = "success";
+        } catch (error) {
+          this.evaluateInfo.status = "error";
+        }
+      },
+      // 商品评价列表
+      async getEvaluateList(id, reqParams) {
+        this.evaluateList.status = "loading";
+        try {
+          // 发送请求
+          let response = await GoodsAPI.getEvaluateList(id, reqParams);
+          // 保存数据
+          this.evaluateList.result = response.result;
+          this.evaluateList.status = "success";
+        } catch (error) {
+          this.evaluateInfo.status = "error";
         }
       },
     },

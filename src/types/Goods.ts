@@ -1,5 +1,6 @@
 import type { Brands } from "./Brands";
 import type { Category } from "./Category ";
+import type { User } from "./User";
 
 export interface Goods {
   id: string;
@@ -88,4 +89,59 @@ export interface GoodsRequestParams {
   lowPrice: number;
   // 最高价
   highPrice: number;
+}
+
+// src/types/Goods.ts
+// 评价信息
+export interface EvaluateInfo {
+  // 售卖数量
+  salesCount: number;
+  // 好评率
+  praisePercent: string;
+  // 评价数量(总)
+  evaluateCount: number;
+  // 评价数量(有图)
+  hasPictureCount: number;
+  // 评价标签
+  tags: EvaluateTag[];
+}
+
+// 评价标签
+export interface EvaluateTag {
+  // 标签名称
+  title: string;
+  // 被打标签的数量
+  tagCount: number;
+}
+
+export interface Evaluate {
+  id: string;
+  score: number;
+  content: string;
+  officialReply: string;
+  praiseCount: number;
+  createTime: string;
+  orderInfo: {
+    quantity: number;
+    createTime: string;
+    specs: EvaluateSpec[];
+  };
+  member: Pick<User, "id" | "nickname" | "avatar">;
+  tags: string[];
+  pictures: string[];
+}
+
+// 评价中的规格
+export interface EvaluateSpec {
+  name: string;
+  nameValue: string;
+}
+
+// 获取评价列表的请求参数接口规范
+export interface EvaluateRequestParams {
+  page: number;
+  pageSize: number;
+  hasPicture: boolean;
+  tag: string;
+  sortField: "" | "praiseCount" | "createTime";
 }
