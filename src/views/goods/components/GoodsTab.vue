@@ -13,13 +13,17 @@ const { evaluateInfo } = storeToRefs(goodsStore);
   <div class="goods-tabs">
     <nav>
       <a
-        class="active"
         href="javascript:"
         @click="activComponent = 'GoodsDetail'"
+        :class="{ active: activComponent === 'GoodsDetail' }"
       >
         商品详情
       </a>
-      <a href="javascript:" @click="activComponent = 'GoodsComment'">
+      <a
+        :class="{ active: activComponent === 'GoodsComment' }"
+        href="javascript:"
+        @click="activComponent = 'GoodsComment'"
+      >
         商品评价
         <span>({{ evaluateInfo.result.evaluateCount }}+)</span>
       </a>
