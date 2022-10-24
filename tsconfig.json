@@ -5,14 +5,13 @@
     "src/**/*",
     "src/**/*.vue",
     "components.d.ts",
-    "auto-import.d.ts"
+    "auto-import.d.ts",
+    "vue-global-props.d.ts"
   ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "references": [

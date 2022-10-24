@@ -48,7 +48,7 @@ export default class XtxRequestManager {
   // 在请求头中加入 token (注册请求拦截器 -> 成功态 )
   private _addTokenToHeader(config: AxiosRequestConfig) {
     // 获取 token
-    const token = this.userStore.profile.token;
+    const token = this.userStore.profile.result.token;
     // 如果 token 存在, 将其添加到请求头中
     if (token) config.headers = { Authorization: `Bearer ${token}` };
     // 返回请求配置对象

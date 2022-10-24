@@ -28,6 +28,7 @@ watch(
   () => props.checked,
   () => {
     if (!isVModel) {
+      // console.log("d");
       checked.value = props.checked;
     }
   }

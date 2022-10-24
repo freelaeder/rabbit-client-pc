@@ -60,6 +60,7 @@ declare module '@vue/runtime-core' {
     XtxHeaderSticky: typeof import('./src/components/XtxHeaderSticky.vue')['default']
     XtxInfiniteLoading: typeof import('./src/components/XtxInfiniteLoading.vue')['default']
     XtxLayout: typeof import('./src/components/XtxLayout.vue')['default']
+    XtxMessage: typeof import('./src/components/XtxMessage.vue')['default']
     XtxMore: typeof import('./src/components/XtxMore.vue')['default']
     XtxNumberBox: typeof import('./src/components/XtxNumberBox.vue')['default']
     XtxPagination: typeof import('./src/views/goods/components/XtxPagination.vue')['default']

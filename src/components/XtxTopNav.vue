@@ -9,16 +9,20 @@ const { profile } = storeToRefs(userStore);
   <nav class="app-top-nav">
     <div class="container">
       <ul>
-        <li>
-          <a href="javascript:">
-            <i class="iconfont icon-user"></i>
-            周杰伦
-          </a>
-        </li>
-        <li><a href="javascript:">退出登录</a></li>
+        <template v-if="profile.result.token">
+          <li>
+            <a href="javascript:">
+              <i class="iconfont icon-user"></i>
+              {{ profile.result.account }}
+            </a>
+          </li>
+          <li><a href="javascript:">退出登录</a></li>
+        </template>
         <!-- 配置登录链接 -->
-        <RouterLink to="/login">请先登录</RouterLink>
-        <li><a href="javascript:">免费注册</a></li>
+        <template v-else>
+          <RouterLink to="/login">请先登录</RouterLink>
+          <li><a href="javascript:">免费注册</a></li>
+        </template>
         <li><a href="javascript:">我的订单</a></li>
         <li><a href="javascript:">会员中心</a></li>
         <li><a href="javascript:">帮助中心</a></li>
