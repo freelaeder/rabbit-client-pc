@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { AuthAPI } from "@/api/AuthAPI";
 import { useUserStore } from "@/stores/userStore";
+import Message from "@/utils/XtxMessage";
 import { toFormValidator } from "@vee-validate/zod";
 import { ErrorMessage, Field } from "vee-validate";
 import * as zod from "zod";
@@ -38,6 +39,7 @@ const { handleSubmit, setFieldValue, validateField, values } = useForm<{
 // 用户储存 用户信息的 store 对象
 const userStore = useUserStore();
 const { login } = userStore;
+
 // 表单提交
 const onSubmit = handleSubmit(async (formValue) => {
   console.log(formValue);

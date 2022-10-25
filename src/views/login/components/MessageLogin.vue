@@ -4,7 +4,10 @@
 import { toFormValidator } from "@vee-validate/zod";
 import * as zod from "zod";
 import { Field, ErrorMessage } from "vee-validate";
-
+import Message from "@/utils/XtxMessage";
+import useCountDown from "@/logics/useCuountDown";
+import { useUserStore } from "@/stores/userStore";
+import { AuthAPI } from "@/api/AuthAPI";
 const validator = toFormValidator(
   zod.object({
     mobile: zod
@@ -22,11 +25,31 @@ const validator = toFormValidator(
 const { handleSubmit, values, setFieldValue, validateField } = useForm({
   validationSchema: validator,
 });
-
+// userStore
+const userStore = useUserStore();
 // 通过验证
 const onSubmit = handleSubmit((values) => {
   console.log(values);
+  userStore.login(() =>
+    AuthAPI.loginByMobileMsgCode(values.mobile, values.code)
+  );
 });
+// 获取倒计时 逻辑
+const { start, count, isActive } = useCountDown();
+// 发送手机验证码
+async function sendMsg() {
+  console.log(await validateField("mobile"));
+  const { valid } = await validateField("mobile");
+  if (!valid) return;
+  // 如果有开启的定时器
+  if (isActive.value) return;
+  // 发送验证码
+  try {
+    Message({ type: "success", msg: "验证码发送成功" });
+    await AuthAPI.sendMsgCodeOfMobileLogin(values.mobile);
+    start();
+  } catch (error) {}
+}
 </script>
 <template>
   <form @submit="onSubmit">
@@ -58,7 +81,9 @@ const onSubmit = handleSubmit((values) => {
       <div class="input">
         <i class="iconfont icon-code"></i>
         <input v-bind="field" type="password" placeholder="请输入验证码" />
-        <span class="code">发送验证码</span>
+        <span @click="sendMsg" class="code">
+          {{ isActive ? `剩余${count}秒` : "发送验证码" }}
+        </span>
       </div>
       <ErrorMessage name="code" v-slot="{ message }">
         <div class="error">

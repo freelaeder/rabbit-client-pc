@@ -69,8 +69,8 @@ export default class XtxRequestManager {
         // 跳转到登录页面
         router.replace("/login");
       }
-      throw error;
     }
+    return Promise.reject(error);
   }
 
   // 用于获取实例对象的静态方法

@@ -31,6 +31,15 @@ const router = createRouter({
       path: "/login",
       component: () => import("@/views/login/LoginPage.vue"),
     },
+    {
+      path: "/login/callback",
+      component: () => import("@/views/login/QQLoginBack.vue"),
+      beforeEnter: () => {
+        if (!window.QC.Login.check()) {
+          return false;
+        }
+      },
+    },
   ],
 });
 

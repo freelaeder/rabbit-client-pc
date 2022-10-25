@@ -2,11 +2,14 @@ import { defineStore } from "pinia";
 import type { User } from "@/types/User";
 import type { Status } from "@/types/Status";
 import type { XtxResponse } from "@/types/Response";
+import { AxiosError } from "axios";
 
 type State = {
   profile: {
     result: Partial<User>;
     status: Status;
+    // 登录失败信息
+    error: string;
   };
 };
 
@@ -25,6 +28,7 @@ export const useUserStore = defineStore<"user", State, Getters, Actions>(
       profile: {
         result: {},
         status: "idle",
+        error: "",
       },
     }),
     persist: true,
@@ -33,6 +37,8 @@ export const useUserStore = defineStore<"user", State, Getters, Actions>(
       // 用户登录
       async login(callback) {
         this.profile.status = "loading";
+        //重置上一次 错误信息
+        this.profile.error = "";
         try {
           // 服务端响应的状态类型
           let response = await callback();
@@ -42,6 +48,12 @@ export const useUserStore = defineStore<"user", State, Getters, Actions>(
           this.profile.status = "success";
         } catch (error) {
           this.profile.status = "error";
+          // 存储错误信息
+          if (error instanceof AxiosError) {
+            this.profile.error = error.response?.data.message;
+          } else if (error instanceof Error) {
+            this.profile.error = error.message;
+          }
         }
       },
     },

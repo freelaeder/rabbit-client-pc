@@ -3,6 +3,14 @@ import { useUserStore } from "@/stores/userStore";
 import { storeToRefs } from "pinia";
 const userStore = useUserStore();
 const { profile } = storeToRefs(userStore);
+// 控制跳转
+const router = useRouter();
+function loginOut() {
+  // 清空userStore
+  userStore.$reset();
+  // 跳转首页
+  router.push("/");
+}
 </script>
 
 <template>
@@ -16,11 +24,13 @@ const { profile } = storeToRefs(userStore);
               {{ profile.result.account }}
             </a>
           </li>
-          <li><a href="javascript:">退出登录</a></li>
+          <li @click="loginOut"><a href="javascript:">退出登录</a></li>
         </template>
         <!-- 配置登录链接 -->
         <template v-else>
-          <RouterLink to="/login">请先登录</RouterLink>
+          <li>
+            <RouterLink to="/login">请先登录</RouterLink>
+          </li>
           <li><a href="javascript:">免费注册</a></li>
         </template>
         <li><a href="javascript:">我的订单</a></li>
