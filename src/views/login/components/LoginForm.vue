@@ -11,6 +11,7 @@ const userStore = useUserStore();
 //useRouter(); 控制路由跳转
 //useRoute() 获取路由细信息
 const router = useRouter();
+const route = useRoute();
 // vue实例对象
 const $ = getCurrentInstance();
 // 监听登录status
@@ -22,7 +23,12 @@ watch(
         type: "success",
         msg: "登录成功",
       });
-      router.push("/");
+      // router.push("/");
+      if (typeof route.query.return !== "undefined") {
+        router.push(route.query.return as string);
+      } else {
+        router.push("/");
+      }
     } else if (status === "error") {
       $?.proxy?.$message({ type: "error", msg: userStore.profile.error });
     }

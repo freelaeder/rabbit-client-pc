@@ -1,5 +1,7 @@
 <script lang="ts" setup>
+import { useCartStore } from "@/stores/cartStore";
 import { useGoodsStore, type Data } from "@/stores/goodsStore";
+import { AxiosError } from "axios";
 import { onBeforeRouteUpdate } from "vue-router";
 
 // 用于储存 商品信息的store对象
@@ -26,6 +28,30 @@ function uncomplete() {
 const skuId = ref<string | undefined>();
 // 定义选择的数量
 const count = ref(1);
+// 组件实例
+const $ = getCurrentInstance();
+// store
+const cartStore = useCartStore();
+//将商品加入购物车
+async function addProductToCart() {
+  // 检查用户是否选择了完整的规格
+  if (typeof skuId.value !== "undefined") {
+    try {
+      // 将商品加入 购物车
+      await cartStore.addProductToCart(skuId.value, count.value);
+      // 消息提示
+      $?.proxy?.$message({ type: "success", msg: "已成功将商品加入购物车" });
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.data.code === "10019") {
+          $?.proxy?.$message({ type: "error", msg: "请登录" });
+        }
+      }
+    }
+  } else {
+    $?.proxy?.$message({ type: "warn", msg: "请选择商品规格哦" });
+  }
+}
 </script>
 
 <template>
@@ -64,7 +90,11 @@ const count = ref(1);
             v-model:count="count"
           />
           <!-- 按钮组件 -->
-          <XtxButton type="primary" :style="{ 'margin-top': '20px' }">
+          <XtxButton
+            @click="addProductToCart"
+            type="primary"
+            :style="{ 'margin-top': '20px' }"
+          >
             加入购物车
           </XtxButton>
         </div>
