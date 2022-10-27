@@ -5,3 +5,9 @@ declare module "vue" {
     $message: typeof Message;
   }
 }
+
+declare global {
+  interface window {
+    QC: any;
+  }
+}

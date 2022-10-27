@@ -1,20 +1,54 @@
 <!-- src/views/login/QQLoginBack.vue -->
 <script setup lang="ts">
+import { useUserStore } from "@/stores/userStore";
+import { AuthAPI } from "@/api/AuthAPI";
 const hasAccount = ref(true);
 // 获取qq 联合中的登录的API
-
+const router = useRouter();
 const Login = window.QC.Login;
+// 获取userStore
+const userStore = useUserStore();
+// 获取组件实列对象
+const $ = getCurrentInstance();
+// 储存 openid
+const unionId = ref("");
+// console.log(Login.check(), "login.check()");
+
 if (Login.check()) {
   Login.getMe((openid: string) => {
-    console.log(openid, "openid------");
+    // console.log(openid, "openid------");
+    unionId.value = openid;
+    userStore.login(() => AuthAPI.loginByQQOpenid(openid, 1));
   });
 } else {
+  router.push("/");
 }
+
+// 监听登录状态 绑定已有账号 ，绑定新注册账号登陆
+watch(
+  () => userStore.profile.status,
+  (status) => {
+    if (status === "success") {
+      $?.proxy?.$message({ type: "success", msg: "登录成功" });
+      router.push("/");
+    } else if (status === "error") {
+      $?.proxy?.$message({
+        type: "error",
+        msg: userStore.profile.error + ",  请绑定账号",
+      });
+    }
+  }
+);
 </script>
 
 <template>
   <LoginHeader>联合登录</LoginHeader>
-  <section class="container">
+  <section class="container" v-if="userStore.profile.status == 'loading'">
+    <div class="unbind">
+      <div class="loading"></div>
+    </div>
+  </section>
+  <section v-else class="container">
     <nav class="tab">
       <a
         @click="hasAccount = true"
@@ -34,10 +68,10 @@ if (Login.check()) {
       </a>
     </nav>
     <div class="tab-content" v-if="hasAccount">
-      <QQLoginBindPhone />
+      <QQLoginBindPhone :unionId="unionId" />
     </div>
     <div class="tab-content" v-else>
-      <QQLoginRegisterNew />
+      <QQLoginRegisterNew :unionId="unionId" />
     </div>
   </section>
   <LoginFooter />
@@ -46,6 +80,22 @@ if (Login.check()) {
 <style scoped lang="less">
 .container {
   padding: 25px 0;
+  position: relative;
+  height: 730px;
+  .unbind {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 25px 0;
+    z-index: 99;
+    .loading {
+      height: 100%;
+      background: #fff url(@/assets/images/load.gif) no-repeat center / 100px
+        100px;
+    }
+  }
 }
 .tab {
   background: #fff;

@@ -66,6 +66,7 @@ export default class XtxRequestManager {
       if (error.response?.status === 401) {
         // 清空用户信息
         this.userStore.$reset();
+
         // 跳转到登录页面
         router.replace("/login");
       }
