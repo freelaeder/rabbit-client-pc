@@ -16,6 +16,16 @@ type Getters = {
   effectiveTotalQuantity(): number;
   // 计算可购买商品总价
   effectiveTotalPrice(): number;
+  // 用户选择的商品列表
+  selectedGoods(): Cart[];
+  // 计算用户选择的商品数量
+  selectedQuantity(): number;
+  // 计算用户选择的商品的价格
+  selectedPrice(): number;
+  // 无效商品列表
+  invalidGoods(): Cart[];
+  // 是否已全部选中
+  isAllSelected(): boolean;
 };
 
 type Actions = {
@@ -29,6 +39,16 @@ type Actions = {
     clearAll?: boolean;
     clearInvalid?: boolean;
   }): Promise<void>;
+  // 修改商品信息
+  alterCartGoods(args: {
+    id: string;
+    selected?: boolean;
+    count?: number;
+  }): Promise<Cart>;
+  // 全选取消全选
+  selecteAndDeselect(seleted: boolean): Promise<void>;
+  // 修改商品规格
+  alterSku(oldSkuId: string, newSkuId: string): Promise<void>;
 };
 
 export const useCartStore = defineStore<"cart", State, Getters, Actions>(
@@ -51,7 +71,7 @@ export const useCartStore = defineStore<"cart", State, Getters, Actions>(
       // 计算可购买商品总价
       effectiveTotalPrice() {
         return this.effectiveGoods.reduce(
-          (total, item) => (total += parseFloat(item.nowPrice)),
+          (total, item) => (total += parseFloat(item.nowPrice) * item.count),
           0
         );
       },
@@ -61,6 +81,32 @@ export const useCartStore = defineStore<"cart", State, Getters, Actions>(
           (total, item) => (total += item.count),
           0
         );
+      },
+      // 用户选择的商品列表
+      selectedGoods() {
+        return this.effectiveGoods.filter((item) => item.selected);
+      },
+      //// 计算用户选择的商品数量
+      selectedQuantity() {
+        return this.selectedGoods.length;
+      },
+      // 计算用户选择的商品的价格
+      selectedPrice() {
+        return this.selectedGoods.reduce(
+          (price, item) => (price += parseFloat(item.nowPrice) * item.count),
+          0
+        );
+      },
+      //无效商品列表
+      invalidGoods() {
+        return this.carts.result.filter(
+          (item) => !item.isEffective || item.stock === 0
+        );
+      },
+      // 是否全部选中
+      isAllSelected() {
+        if (this.selectedGoods.length === 0) return false;
+        return this.selectedGoods.length === this.effectiveGoods.length;
       },
     },
     actions: {
@@ -102,6 +148,32 @@ export const useCartStore = defineStore<"cart", State, Getters, Actions>(
           // 比如清空无效商品, 而无效商品的数量为0
           // 请求是发送成功的, 但是并没有删除任何商品
         }
+      },
+      // 修改商品
+      async alterCartGoods(args) {
+        const response = await CartAPI.alterCartGoods(args);
+        this.getCarts();
+        return response.result;
+      },
+      // 全选
+      async selecteAndDeselect(selected) {
+        // 发送请求实现全选和取消全选
+        await CartAPI.selectAndDeselec(selected);
+        // 更新购物车
+        this.getCarts();
+      },
+      // 修改商品规格
+      async alterSku(oldSkuId, newSkuId) {
+        // 根据旧商品的 skuId 查找旧的商品
+        const oldGoods = this.carts.result.find(
+          (item) => item.skuId === oldSkuId
+        );
+        if (typeof oldGoods == "undefined") return;
+        // 如果找到了旧的商品
+        const goodsCount = oldGoods.count;
+        await this.removeGoodsOfCart({ ids: [oldSkuId] });
+        // 添加新的商品
+        await this.addProductToCart(newSkuId, goodsCount);
       },
     },
   }

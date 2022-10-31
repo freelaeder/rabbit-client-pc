@@ -7,6 +7,9 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AccountLogin: typeof import('./src/views/login/components/AccountLogin.vue')['default']
     AllSubCategories: typeof import('./src/views/category/components/AllSubCategories.vue')['default']
+    CartPage: typeof import('./src/views/cart/CartPage.vue')['default']
+    CartSku: typeof import('./src/views/cart/components/CartSku.vue')['default']
+    CheckoutPage: typeof import('./src/views/pay/CheckoutPage.vue')['default']
     CommentImage: typeof import('./src/views/goods/components/CommentImage.vue')['default']
     CommentList: typeof import('./src/views/goods/components/CommentList.vue')['default']
     CommentScreen: typeof import('./src/views/goods/components/CommentScreen.vue')['default']

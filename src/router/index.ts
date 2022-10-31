@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import authGuard from "./authGuard";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -25,6 +26,14 @@ const router = createRouter({
           path: "goods/:id",
           component: () => import("@/views/goods/GoodsDetailPage.vue"),
         },
+        {
+          path: "/cart",
+          component: () => import("@/views/cart/CartPage.vue"),
+        },
+        {
+          path: "checkout/order",
+          component: () => import("@/views/pay/CheckoutPage.vue"),
+        },
       ],
     },
     {
@@ -43,4 +52,5 @@ const router = createRouter({
   ],
 });
 
+router.beforeEach(authGuard);
 export default router;

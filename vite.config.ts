@@ -50,4 +50,8 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // 在构建阶段 如果图片小于10k 编译 base64
+    assetsInlineLimit: 10000,
+  },
 });

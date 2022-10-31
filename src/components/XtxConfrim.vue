@@ -1,19 +1,16 @@
 <script setup lang="ts">
-export type callback = () => void;
+export type callback = (value?: unknown) => void;
 
 withDefaults(
   defineProps<{
     title?: string;
     content: string;
-    sure?: callback;
-    cancel?: callback;
-    close?: callback;
+    sure: callback;
+    cancel: callback;
+    close: callback;
   }>(),
   {
     title: "温馨提示",
-    sure: () => {},
-    cancel: () => {},
-    close: () => {},
   }
 );
 </script>

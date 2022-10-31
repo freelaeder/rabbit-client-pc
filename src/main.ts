@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import router from "./router";
 import App from "./App.vue";
-import messagePlugin from "./utils/messagePlugin";
+import messagePlugin from "./utils/plugin";
 import "normalize.css";
 import "@/assets/styles/common.less";
 import piniaPersistedState from "pinia-plugin-persistedstate";

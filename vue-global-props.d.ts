@@ -9,7 +9,7 @@ declare module "vue" {
 }
 
 declare global {
-  interface window {
+  interface Window {
     QC: any;
   }
 }

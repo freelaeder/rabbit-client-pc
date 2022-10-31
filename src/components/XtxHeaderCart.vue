@@ -9,15 +9,25 @@ cartStore.getCarts();
 // 组件实列
 const $ = getCurrentInstance();
 
-// 删除购物车的商品
+// 删除购物车商品
 async function remove(skuId: string) {
   try {
-    await cartStore.removeGoodsOfCart({ ids: [skuId] });
-    // 消息提示
-    $?.proxy?.$message({ type: "success", msg: "商品删除成功" });
+    // 删除确认
+    await $?.proxy?.$confirm({
+      content: "您确定要从购物车中删除该商品吗?",
+    });
+    try {
+      // 发送请求删除商品
+      await cartStore.removeGoodsOfCart({ ids: [skuId] });
+      // 消息提示
+      $?.proxy?.$message({ type: "success", msg: "商品删除成功" });
+    } catch (error) {
+      // 消息提示
+      $?.proxy?.$message({ type: "error", msg: "商品删除失败" });
+    }
   } catch (error) {
     // 消息提示
-    $?.proxy?.$message({ type: "success", msg: "商品删除失败" });
+    $?.proxy?.$message({ type: "success", msg: "已取消删除" });
   }
 }
 </script>
@@ -27,7 +37,7 @@ async function remove(skuId: string) {
       <i class="iconfont icon-cart"></i>
       <em>{{ cartStore.effectiveTotalQuantity }}</em>
     </RouterLink>
-    <div class="layer">
+    <div class="layer" v-if="$route.path !== '/cart'">
       <div class="list">
         <div class="item" v-for="item in cartStore.carts.result" :key="item.id">
           <RouterLink to="">
