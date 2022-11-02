@@ -11,6 +11,8 @@ const { evaluateInfo } = storeToRefs(goodsStore);
 const { getEvaluateInfo } = goodsStore;
 // 路由
 const route = useRoute();
+console.log(route.params, "route.params");
+
 // 发送请求
 getEvaluateInfo(route.params.id as string);
 const props = defineProps<{ reqParams: EvaluateRequestParams }>();

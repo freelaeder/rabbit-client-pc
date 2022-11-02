@@ -42,6 +42,12 @@ const finalAddress = computed(() => {
   const firstList = orderStore.address.result[0];
   if (typeof firstList !== "undefined") return firstList;
 });
+
+//获取切换收货地址组件实例对象
+const addressSwitch = ref();
+function switchAdress() {
+  addressSwitch.value.visible = true;
+}
 </script>
 <template>
   <div class="address">
@@ -76,7 +82,7 @@ const finalAddress = computed(() => {
       <a href="javascript:">修改地址</a>
     </div>
     <div class="action">
-      <XtxButton class="btn">切换地址</XtxButton>
+      <XtxButton @click="switchAdress" class="btn">切换地址</XtxButton>
       <XtxButton @click="addAdress" class="btn">添加地址</XtxButton>
     </div>
   </div>
@@ -84,6 +90,12 @@ const finalAddress = computed(() => {
   <ReceivingAddressEdit
     @onAddressEditSuccess="addressAdded"
     ref="addressEditInstance"
+  />
+  <!-- 切换收货地址 -->
+  <ReceivingAddressSwitch
+    @addressSwitched="highestPriority = $event"
+    :finalAddressId="finalAddress?.id"
+    ref="addressSwitch"
   />
 </template>
 

@@ -3,6 +3,7 @@ import type {
   Address,
   EditAddressObject,
   OrderOfCreateResponse,
+  OrderResponse,
 } from "@/types/Order";
 import type { Status } from "@/types/Status";
 
@@ -17,6 +18,11 @@ type State = {
     result: Address[];
     status: Status;
   };
+  // 订单详情信息
+  orderInfo: {
+    result: Partial<OrderResponse>;
+    status: Status;
+  };
 };
 
 type Getters = {};
@@ -27,6 +33,8 @@ type Actions = {
   addAddress(address: EditAddressObject): Promise<string>;
   //获取收货地址
   getAddress(): Promise<void>;
+  // 获取订单详情
+  getOrderInfoById(id: string): Promise<void>;
 };
 
 export const useOrderStore = defineStore<"order", State, Getters, Actions>(
@@ -51,6 +59,11 @@ export const useOrderStore = defineStore<"order", State, Getters, Actions>(
       // 收货地址列表
       address: {
         result: [],
+        status: "idle",
+      },
+      // 获取订单详情信息
+      orderInfo: {
+        result: {},
         status: "idle",
       },
     }),
@@ -85,6 +98,17 @@ export const useOrderStore = defineStore<"order", State, Getters, Actions>(
         } catch (error) {
           //更新状态
           this.address.status = "error";
+        }
+      },
+      // 获取订单详情
+      async getOrderInfoById(id) {
+        this.orderInfo.status = "loading";
+        try {
+          const response = await OrderAPI.getOrderInfoById(id);
+          this.orderInfo.result = response.result;
+          this.orderInfo.status = "success";
+        } catch (error) {
+          this.orderInfo.status = "error";
         }
       },
     },

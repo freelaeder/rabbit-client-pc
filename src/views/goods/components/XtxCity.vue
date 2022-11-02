@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import type { Status } from "@/types/Status";
 import axios from "axios";
-import { add } from "lodash";
 // 提示用户操作的文字
 const props = withDefaults(
   defineProps<{ placeholder?: string; fullLocation: string }>(),
