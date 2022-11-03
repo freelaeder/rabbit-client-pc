@@ -1,5 +1,3 @@
-<!-- 商品评价组件: src/views/goods/components/GoodsComment.vue -->
-
 <script lang="ts" setup>
 import { useGoodsStore } from "@/stores/goodsStore";
 import type { EvaluateRequestParams } from "@/types/Goods";
