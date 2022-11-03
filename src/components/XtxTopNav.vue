@@ -19,10 +19,10 @@ function loginOut() {
       <ul>
         <template v-if="profile.result.token">
           <li>
-            <a href="javascript:">
+            <RouterLink to="/member/home">
               <i class="iconfont icon-user"></i>
               {{ profile.result.account }}
-            </a>
+            </RouterLink>
           </li>
           <li @click="loginOut"><a href="javascript:">退出登录</a></li>
         </template>

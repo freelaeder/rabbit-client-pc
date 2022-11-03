@@ -38,6 +38,21 @@ const router = createRouter({
           path: "checkout/pay",
           component: () => import("@/views/pay/PayPage.vue"),
         },
+        {
+          path: "pay/callback",
+          component: () => import("@/views/pay/PayResultPage.vue"),
+        },
+        {
+          path: "member",
+          component: () => import("@/components/XtxMemberLayout.vue"),
+          redirect: "/member/home",
+          children: [
+            {
+              path: "home",
+              component: () => import("@/views/member/home/MemberHomePage.vue"),
+            },
+          ],
+        },
       ],
     },
     {

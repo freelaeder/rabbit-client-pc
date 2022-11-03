@@ -5,7 +5,7 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
-
+import requireTransform from "vite-plugin-require-transform";
 export default defineConfig({
   server: {
     port: 8080,
@@ -28,6 +28,9 @@ export default defineConfig({
       imports: ["vue", "vue-router", "pinia", "@vueuse/core", "vee-validate"],
       // 可以选择auto-import.d.ts生成的位置，使用ts建议设置为'src/auto-import.d.ts'
       dts: "auto-import.d.ts",
+    }),
+    requireTransform({
+      fileRegex: /.ts$|.tsx$|.vue$/,
     }),
   ],
   resolve: {

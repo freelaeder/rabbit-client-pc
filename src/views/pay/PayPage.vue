@@ -1,4 +1,51 @@
 <!-- src/views/pay/PayPage.vue -->
+<script lang="ts" setup>
+import useCountDown from "@/logics/useCuountDown";
+import { useOrderStore } from "@/stores/orderStore";
+import XtxRequestManager from "@/utils/XtxRequestManager";
+import dayjs from "dayjs";
+// 获取订单对象
+const orderStore = useOrderStore();
+// 路由 信息
+const route = useRoute();
+//路由跳转
+const router = useRouter();
+// 倒计时
+const { count, start, isActive } = useCountDown();
+// 获取订单详情
+orderStore.getOrderInfoById(route.query.orderId as string);
+// 监听订单详细信息的获取状态
+watch(
+  () => orderStore.orderInfo.status,
+  (status) => {
+    // 如果订单详细信息获取成功
+    if (status === "success") {
+      // 获取订单状态
+      const orderState = orderStore.orderInfo.result.orderState;
+      // 待支付
+      if (orderState === 1) {
+        // 获取倒计时时间
+        const countdown = orderStore.orderInfo.result.countdown;
+        // 如果还可以倒计时
+        if (countdown > 0) {
+          // 开启倒计时
+          start(countdown);
+        }
+      } else if (orderState === 2) {
+        // 已支付
+        router.push("/member/order");
+      }
+    }
+  }
+);
+// 支付回跳地址
+const redirect = encodeURIComponent("http://www.corho.com:8080/#/pay/callback");
+// 支付地址
+const payUrl = `${XtxRequestManager.baseUrl}pay/aliPay?orderId=${route.query.orderId}&redirect=${redirect}`;
+// 支付等待标识
+const paying = ref(false);
+</script>
+
 <template>
   <div class="xtx-pay-page">
     <div class="container">
@@ -10,17 +57,18 @@
       <!-- 付款信息 -->
       <div class="pay-info">
         <span class="icon iconfont icon-queren2"></span>
-        <div class="tip">
+        <div class="tip" v-if="isActive">
           <p>订单提交成功！请尽快完成支付。</p>
           <p>
             支付还剩
-            <span>24分59秒</span>
+            <span>{{ dayjs.unix(count).format("mm分ss秒") }}</span>
             , 超时后将取消订单
           </p>
         </div>
+        <div class="tip" v-else>订单超时</div>
         <div class="amount">
           <span>应付总额：</span>
-          <span>¥5673.00</span>
+          <span>¥{{ orderStore.orderInfo.result.payMoney?.toFixed(2) }}</span>
         </div>
       </div>
       <!-- 付款方式 -->
@@ -29,7 +77,12 @@
         <div class="item">
           <p>支付平台</p>
           <a class="btn wx" href="javascript:"></a>
-          <a class="btn alipay" href="javascript:"></a>
+          <a
+            @click="paying = true"
+            class="btn alipay"
+            target="_blank"
+            :href="payUrl"
+          ></a>
         </div>
         <div class="item">
           <p>支付方式</p>
@@ -42,6 +95,21 @@
       </div>
     </div>
   </div>
+  <XtxDialog title="正在支付..." v-model:visible="paying">
+    <template #body>
+      <div class="pay-wait">
+        <img src="@/assets/images/load.gif" alt="" />
+        <div>
+          <p>如果支付成功：</p>
+          <!-- <RouterLink :to="`/member/order/${orderStore.orderInfo.result.id}`"
+            >查看订单详情></RouterLink
+          > -->
+          <p>如果支付失败：</p>
+          <RouterLink to="/">查看相关疑问></RouterLink>
+        </div>
+      </div>
+    </template>
+  </XtxDialog>
 </template>
 
 <style scoped lang="less">
@@ -116,6 +184,17 @@
       background: url(https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/c66f98cff8649bd5ba722c2e8067c6ca.jpg)
         no-repeat center / contain;
     }
+  }
+}
+.pay-wait {
+  display: flex;
+  justify-content: space-around;
+  p {
+    margin-top: 30px;
+    font-size: 14px;
+  }
+  a {
+    color: @xtxColor;
   }
 }
 </style>

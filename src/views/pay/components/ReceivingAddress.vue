@@ -13,6 +13,8 @@ function addAdress() {
   // console.log(addressEditInstance.value.visible);
   // 修改 visible 显示弹框
   addressEditInstance.value.visible = true;
+  // 改变flag
+  addressEditInstance.value.flag.ismodify = false;
 }
 
 // 获取store
@@ -48,6 +50,23 @@ const addressSwitch = ref();
 function switchAdress() {
   addressSwitch.value.visible = true;
 }
+
+// 修改收获地址
+function alterAddress() {
+  //显示弹框
+  addressEditInstance.value.visible = true;
+  // 获取当前显示的 地址赋值给 formValues
+  addressEditInstance.value.formValues = {
+    ...finalAddress.value,
+    isDefault: finalAddress.value?.isDefault === 0 ? true : false,
+  };
+  addressEditInstance.value.fullLocation = finalAddress.value?.fullLocation;
+  // 改变flag
+  addressEditInstance.value.flag.ismodify = true;
+}
+
+//暴露 用户选择的收货地zhi
+defineExpose({ addressId: () => finalAddress.value?.id });
 </script>
 <template>
   <div class="address">
@@ -79,7 +98,9 @@ function switchAdress() {
           {{ finalAddress.fullLocation }} {{ finalAddress.address }}
         </li>
       </ul>
-      <a href="javascript:">修改地址</a>
+      <a @click="alterAddress" v-if="finalAddress" href="javascript:">
+        修改地址
+      </a>
     </div>
     <div class="action">
       <XtxButton @click="switchAdress" class="btn">切换地址</XtxButton>

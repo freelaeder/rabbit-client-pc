@@ -4,9 +4,8 @@ import type { EditAddressObject } from "@/types/Order";
 import { useOrderStore } from "@/stores/orderStore";
 // 用于控制弹框的显示和隐藏
 const visible = ref(false);
-// 向外暴露用于控制弹框显示和隐藏的响应式状态
-defineExpose({ visible });
-
+// 显示是添加还是修改
+const flag = reactive({ ismodify: false });
 // 表单初始值
 const initalValues: EditAddressObject = {
   // 收货人姓名
@@ -41,11 +40,25 @@ const emit = defineEmits<{ (e: "onAddressEditSuccess", id: string): void }>();
 async function editAddress() {
   // 捕获请求
   try {
-    let id = await orderStore.addAddress({
-      ...formValues.value,
-      isDefault: formValues.value.isDefault ? 0 : 1,
+    let id = "";
+    if (flag.ismodify) {
+      // 修改
+      id = await orderStore.updateAddress({
+        ...formValues.value,
+        isDefault: formValues.value.isDefault ? 0 : 1,
+      });
+    } else {
+      // 添加
+      id = await orderStore.addAddress({
+        ...formValues.value,
+        isDefault: formValues.value.isDefault ? 0 : 1,
+      });
+    }
+
+    $?.proxy?.$message({
+      type: "success",
+      msg: `收货地址${flag.ismodify ? "修改" : "添加"}成功`,
     });
-    $?.proxy?.$message({ type: "success", msg: "收货地址添加成功" });
     // 添加成功后 更新本地列表 自定义事件 传递新的 收货地址 id
     // 更新本地
     await orderStore.getAddress();
@@ -54,7 +67,10 @@ async function editAddress() {
     // 关闭弹框
     visible.value = false;
   } catch (error) {
-    $?.proxy?.$message({ type: "error", msg: "收货地址添加失败" });
+    $?.proxy?.$message({
+      type: "error",
+      msg: `收货地址${flag.ismodify ? "修改" : "添加"}失败`,
+    });
   }
 }
 // 监听visible 如果为false 清空表单值
@@ -64,10 +80,16 @@ watch(visible, () => {
     fullLocation.value = "";
   }
 });
+
+// 向外暴露用于控制弹框显示和隐藏的响应式状态
+defineExpose({ visible, formValues, fullLocation, flag });
 </script>
 
 <template>
-  <XtxDialog v-model:visible="visible" title="添加收货地址">
+  <XtxDialog
+    v-model:visible="visible"
+    :title="`${flag.ismodify ? '修改' : '添加'}收获地址`"
+  >
     <template #body>
       <div class="address-edit">
         <div class="xtx-form">

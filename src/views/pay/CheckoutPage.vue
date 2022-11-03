@@ -1,10 +1,49 @@
 <script lang="ts" setup>
+import { useCartStore } from "@/stores/cartStore";
 import { useOrderStore } from "@/stores/orderStore";
-import { or } from "@vueuse/core";
+import type { SubmitOrderObject } from "@/types/Order";
 // 获取用于存储订单信息的 store 对象
 const orderStore = useOrderStore();
+// 获取购物车 store 对象
+const cartStore = useCartStore();
 // 创建订单
 orderStore.createOrder();
+// 收货地址组件实列对象
+const receivingAddressInstance = ref();
+const $ = getCurrentInstance();
+const router = useRouter();
+// 提交订单
+async function submitOrder() {
+  // 订单对象
+  const order: SubmitOrderObject = {
+    goods: orderStore.orderOfCreate.result.goods.map((goods) => ({
+      skuId: goods.skuId,
+      count: goods.count,
+    })),
+    addressId: receivingAddressInstance.value.addressId(),
+    // 配送时间 1 不限
+    deliveryTimeType: 1,
+    // 支付方式 1 支付宝
+    payType: 1,
+    // 支付渠道 1 为在线支付
+    payChannel: 1,
+    // 买家留言
+    buyerMessage: "",
+  };
+  if (!order.addressId) {
+    return $?.proxy?.$message({ type: "error", msg: "请选择收货地址" });
+  }
+  try {
+    // 提交订单
+    const response = await orderStore.submitOrder(order);
+    // 订单提交后, 重新获取购物车状态
+    cartStore.getCarts();
+    // 跳转支付页面
+    router.push({ path: "/checkout/pay", query: { orderId: response.id } });
+  } catch (error) {
+    $?.proxy?.$message({ type: "error", msg: "订单提交失败" });
+  }
+}
 </script>
 
 <template>
@@ -20,7 +59,7 @@ orderStore.createOrder();
         <h3 class="box-title">收货地址</h3>
         <div class="box-body">
           <!-- 调用收货地址组件 -->
-          <ReceivingAddress />
+          <ReceivingAddress ref="receivingAddressInstance" />
         </div>
         <!-- 商品信息 -->
         <h3 class="box-title">商品信息</h3>
@@ -107,7 +146,7 @@ orderStore.createOrder();
         </div>
         <!-- 提交订单 -->
         <div class="submit">
-          <XtxButton type="primary">提交订单</XtxButton>
+          <XtxButton @click="submitOrder" type="primary">提交订单</XtxButton>
         </div>
       </div>
     </div>

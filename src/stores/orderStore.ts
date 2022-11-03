@@ -4,6 +4,8 @@ import type {
   EditAddressObject,
   OrderOfCreateResponse,
   OrderResponse,
+  SubmitOrderObject,
+  SubmitOrderResponse,
 } from "@/types/Order";
 import type { Status } from "@/types/Status";
 
@@ -35,6 +37,10 @@ type Actions = {
   getAddress(): Promise<void>;
   // 获取订单详情
   getOrderInfoById(id: string): Promise<void>;
+  // 修改收货地址
+  updateAddress(address: EditAddressObject): Promise<string>;
+  // 提交订单
+  submitOrder(order: SubmitOrderObject): Promise<SubmitOrderResponse>;
 };
 
 export const useOrderStore = defineStore<"order", State, Getters, Actions>(
@@ -110,6 +116,17 @@ export const useOrderStore = defineStore<"order", State, Getters, Actions>(
         } catch (error) {
           this.orderInfo.status = "error";
         }
+      },
+      // 修改收货地址
+      async updateAddress(address) {
+        const { id, ...rest } = address;
+        const response = await OrderAPI.updateAddress(id!, rest);
+        return response.result.id;
+      },
+      // 提交订单
+      async submitOrder(order) {
+        const response = await OrderAPI.submitOrder(order);
+        return response.result;
       },
     },
   }

@@ -104,3 +104,26 @@ export interface OrderSku {
   properties: { propertyMainName: string; propertyValueName: string }[];
   attrsText: string;
 }
+
+// 提交订单的传递的订单对象
+export interface SubmitOrderObject {
+  // 商品数组
+  goods: { skuId: string; count: number }[];
+  // 收货地址 id
+  addressId: string;
+  // 配送时间类型, 1为不限, 2为工作日, 3为双休或假日
+  deliveryTimeType: 1 | 2 | 3;
+  // 支付方式, 1为在线支付, 2为货到付款
+  payType: 1 | 2;
+  // 支付渠道, 1支付宝, 2微信
+  payChannel: 1 | 2;
+  // 买家留言
+  buyerMessage: string;
+}
+
+// 提交订单接口的返回值
+export interface SubmitOrderResponse {
+  id: string;
+  payType: 1 | 2;
+  payChannel: 1 | 2;
+}

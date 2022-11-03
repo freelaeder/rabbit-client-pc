@@ -5,6 +5,8 @@ import type {
   EditAddressObject,
   OrderOfCreateResponse,
   OrderResponse,
+  SubmitOrderObject,
+  SubmitOrderResponse,
 } from "@/types/Order";
 export class OrderAPI {
   // 生成订单
@@ -47,6 +49,17 @@ export class OrderAPI {
   static getOrderInfoById(id: string) {
     return XtxRequestManager.instance.request<XtxResponse<OrderResponse>>({
       url: `/member/order/${id}`,
+    });
+  }
+  // 提交订单
+  static submitOrder(order: SubmitOrderObject) {
+    return XtxRequestManager.instance.request<
+      XtxResponse<SubmitOrderResponse>,
+      SubmitOrderObject
+    >({
+      url: "/member/order",
+      method: "post",
+      data: order,
     });
   }
 }
