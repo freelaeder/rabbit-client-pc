@@ -45,6 +45,8 @@ declare module '@vue/runtime-core' {
     MemberHomePage: typeof import('./src/views/member/home/MemberHomePage.vue')['default']
     MemberHomePanel: typeof import('./src/views/member/home/components/MemberHomePanel.vue')['default']
     MessageLogin: typeof import('./src/views/login/components/MessageLogin.vue')['default']
+    OrderDetailPage: typeof import('./src/views/member/order/OrderDetailPage.vue')['default']
+    OrderListPage: typeof import('./src/views/member/order/OrderListPage.vue')['default']
     PayPage: typeof import('./src/views/pay/PayPage.vue')['default']
     PayResultPage: typeof import('./src/views/pay/PayResultPage.vue')['default']
     QQLoginBack: typeof import('./src/views/login/QQLoginBack.vue')['default']

@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory, RouterView } from "vue-router";
 import authGuard from "./authGuard";
 
 const router = createRouter({
@@ -50,6 +50,22 @@ const router = createRouter({
             {
               path: "home",
               component: () => import("@/views/member/home/MemberHomePage.vue"),
+            },
+            {
+              path: "order",
+              component: h(RouterView),
+              children: [
+                {
+                  path: "",
+                  component: () =>
+                    import("@/views/member/order/OrderListPage.vue"),
+                },
+                {
+                  path: ":id",
+                  component: () =>
+                    import("@/views/member/order/OrderDetailPage.vue"),
+                },
+              ],
             },
           ],
         },

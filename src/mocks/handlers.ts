@@ -19,7 +19,7 @@ export const handles = [
           page: req.url.searchParams.get("page"),
           pageSize: req.url.searchParams.get("pageSize"),
           pages: 0,
-          items: makeArray(10, () => ({
+          items: makeArray(4, () => ({
             id: faker.datatype.uuid(),
             name: faker.internet.userName(),
             desc: faker.commerce.productDescription(),
