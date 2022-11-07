@@ -64,7 +64,7 @@ export interface OrderResponse {
   // 支付方式，1为在线支付，2为货到付款
   payType: 1 | 2;
   // 订单状态: 1为待付款、2为待发货、3为待收货、4为待评价、5为已完成、6为已取消
-  orderState: 1 | 2 | 3 | 4 | 5 | 6;
+  orderState: OrderState;
   payLatestTime: string;
   countdown: number;
   postFee: number;
@@ -127,3 +127,5 @@ export interface SubmitOrderResponse {
   payType: 1 | 2;
   payChannel: 1 | 2;
 }
+
+export type OrderState = 0 | 1 | 2 | 3 | 4 | 5 | 6;

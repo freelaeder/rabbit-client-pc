@@ -1,10 +1,11 @@
-import type { XtxResponse } from "@/types/Response";
+import type { Pagination, XtxResponse } from "@/types/Response";
 import XtxRequestManager from "@/utils/XtxRequestManager";
 import type {
   Address,
   EditAddressObject,
   OrderOfCreateResponse,
   OrderResponse,
+  OrderState,
   SubmitOrderObject,
   SubmitOrderResponse,
 } from "@/types/Order";
@@ -60,6 +61,15 @@ export class OrderAPI {
       url: "/member/order",
       method: "post",
       data: order,
+    });
+  }
+
+  static getMyOrders(page: number, pageSize: number, orderState: OrderState) {
+    return XtxRequestManager.instance.request<
+      XtxResponse<Pagination<OrderResponse>>
+    >({
+      url: "/member/order",
+      data: { page, pageSize, orderState },
     });
   }
 }

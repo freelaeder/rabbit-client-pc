@@ -4,9 +4,11 @@ import type {
   EditAddressObject,
   OrderOfCreateResponse,
   OrderResponse,
+  OrderState,
   SubmitOrderObject,
   SubmitOrderResponse,
 } from "@/types/Order";
+import type { Pagination } from "@/types/Response";
 import type { Status } from "@/types/Status";
 
 type State = {
@@ -25,6 +27,13 @@ type State = {
     result: Partial<OrderResponse>;
     status: Status;
   };
+  // 获取我的订单详情
+  myOrderList: {
+    [key in OrderState]: {
+      result: Partial<Pagination<OrderResponse>>;
+      status: Status;
+    };
+  };
 };
 
 type Getters = {};
@@ -41,6 +50,12 @@ type Actions = {
   updateAddress(address: EditAddressObject): Promise<string>;
   // 提交订单
   submitOrder(order: SubmitOrderObject): Promise<SubmitOrderResponse>;
+  // 获取我的订单列表
+  getMyOrderList(
+    page: number,
+    pageSize: number,
+    orderState: OrderState
+  ): Promise<void>;
 };
 
 export const useOrderStore = defineStore<"order", State, Getters, Actions>(
@@ -71,6 +86,16 @@ export const useOrderStore = defineStore<"order", State, Getters, Actions>(
       orderInfo: {
         result: {},
         status: "idle",
+      },
+      // 我的订单列表
+      myOrderList: {
+        0: { result: {}, status: "idle" },
+        1: { result: {}, status: "idle" },
+        2: { result: {}, status: "idle" },
+        3: { result: {}, status: "idle" },
+        4: { result: {}, status: "idle" },
+        5: { result: {}, status: "idle" },
+        6: { result: {}, status: "idle" },
       },
     }),
     actions: {
@@ -127,6 +152,26 @@ export const useOrderStore = defineStore<"order", State, Getters, Actions>(
       async submitOrder(order) {
         const response = await OrderAPI.submitOrder(order);
         return response.result;
+      },
+      // 获取我的订单
+      async getMyOrderList(page, pageSize, orderState) {
+        // 更新状态
+        this.myOrderList[orderState].status = "loading";
+        try {
+          // 发送请求
+          const response = await OrderAPI.getMyOrders(
+            page,
+            pageSize,
+            orderState
+          );
+          // 储存信息
+          this.myOrderList[orderState].result = response.result;
+          // 更新状态
+          this.myOrderList[orderState].status = "success";
+        } catch (error) {
+          // 更新状态
+          this.myOrderList[orderState].status = "error";
+        }
       },
     },
   }
