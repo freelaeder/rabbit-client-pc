@@ -2,6 +2,7 @@ import { OrderAPI } from "@/api/OrderAPI";
 import type {
   Address,
   EditAddressObject,
+  LogisticsResponse,
   OrderOfCreateResponse,
   OrderResponse,
   OrderState,
@@ -34,6 +35,11 @@ type State = {
       status: Status;
     };
   };
+  // 物流信息
+  logistics: {
+    result: Partial<LogisticsResponse>;
+    status: Status;
+  };
 };
 
 type Getters = {};
@@ -56,6 +62,14 @@ type Actions = {
     pageSize: number,
     orderState: OrderState
   ): Promise<void>;
+  // 取消订单
+  cancelOrder(id: string, cancelReason: string): Promise<OrderResponse>;
+  // 删除订单
+  removeOrder(ids: string[]): Promise<null>;
+  // 确定收获
+  confirmReceiptGoods(id: string): Promise<OrderResponse>;
+  // 获取物流信息
+  viewLogistics(id: string): Promise<void>;
 };
 
 export const useOrderStore = defineStore<"order", State, Getters, Actions>(
@@ -96,6 +110,11 @@ export const useOrderStore = defineStore<"order", State, Getters, Actions>(
         4: { result: {}, status: "idle" },
         5: { result: {}, status: "idle" },
         6: { result: {}, status: "idle" },
+      },
+      // 物流信息
+      logistics: {
+        result: {},
+        status: "idle",
       },
     }),
     actions: {
@@ -171,6 +190,32 @@ export const useOrderStore = defineStore<"order", State, Getters, Actions>(
         } catch (error) {
           // 更新状态
           this.myOrderList[orderState].status = "error";
+        }
+      },
+      // 取消订单
+      async cancelOrder(id, cancelReason) {
+        const response = await OrderAPI.cancelOrder(id, cancelReason);
+        return response.result;
+      },
+      // 删除订单
+      async removeOrder(ids) {
+        const response = await OrderAPI.removeOrder(ids);
+        return response.result;
+      },
+      // 确定收货
+      async confirmReceiptGoods(id) {
+        const response = await OrderAPI.confirmReceiptGoods(id);
+        return response.result;
+      },
+      // 物流信息
+      async viewLogistics(id) {
+        this.logistics.status = "loading";
+        try {
+          const response = await OrderAPI.viewLogistics(id);
+          this.logistics.result = response.result;
+          this.logistics.status = "success";
+        } catch (error) {
+          this.logistics.status = "error";
         }
       },
     },

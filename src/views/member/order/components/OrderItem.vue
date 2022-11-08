@@ -2,13 +2,64 @@
 <script setup lang="ts">
 import { orderStatus } from "@/contants/orderStatus";
 import useCountDown from "@/logics/useCuountDown";
+import { useOrderStore } from "@/stores/orderStore";
 import type { OrderResponse } from "@/types/Order";
+import Confirm from "@/utils/MyConfrim";
 import dayjs from "dayjs";
 const props = defineProps<{ item: OrderResponse }>();
 
 const { count, start } = useCountDown();
 if (props.item.orderState === 1) {
   start(props.item.countdown);
+}
+
+// 自定义事件
+// 向外层组件传递订单id
+const emit = defineEmits<{
+  // 取消订单
+  (e: "onCancelButton", id: string): void;
+  // 删除订单
+  (e: "removeOrderList"): void;
+  // 确定收获
+  (e: "confirmReceiptGoodsSuccess"): void;
+  // 查看物流
+  (e: "viewLogistics", id: string): void;
+}>();
+const orderStore = useOrderStore();
+// 组件实例
+const $ = getCurrentInstance();
+// 删除订单
+async function removeOrder(id: string) {
+  try {
+    await Confirm({ content: "确定要删除订单吗" });
+    // 发送请求
+    await orderStore.removeOrder([id]);
+    // 提示
+    $?.proxy?.$message({ type: "success", msg: "删除订单成功" });
+    //提示父组件更新
+    emit("removeOrderList");
+  } catch (error) {
+    // 提示
+    $?.proxy?.$message({ type: "error", msg: "删除订单失败" });
+    return;
+  }
+}
+// 确定收货
+async function confimReceipt(id: string) {
+  try {
+    // 提示用户
+    await Confirm({ content: "您确定收到货物了吗" });
+    // 发送收货请求
+    await orderStore.confirmReceiptGoods(id);
+    // 触发父组件
+    emit("confirmReceiptGoodsSuccess");
+    // 消息提示
+    $?.proxy?.$message({ type: "success", msg: "确认收货成功" });
+  } catch (error) {
+    // 消息提示
+    $?.proxy?.$message({ type: "error", msg: "确认收货失败" });
+    return;
+  }
 }
 </script>
 <template>
@@ -20,7 +71,12 @@ if (props.item.orderState === 1) {
         <i class="iconfont icon-down-time"></i>
         <b>付款截止: {{ dayjs.unix(count).format("mm分ss秒") }}</b>
       </span>
-      <a v-if="[5, 6].includes(item.orderState)" href="javascript:" class="del">
+      <a
+        @click="removeOrder(item.id)"
+        v-if="[5, 6].includes(item.orderState)"
+        href="javascript:"
+        class="del"
+      >
         删除
       </a>
     </div>
@@ -44,7 +100,12 @@ if (props.item.orderState === 1) {
       </div>
       <div class="column state">
         <p>{{ orderStatus[item.orderState].label }}</p>
-        <a v-if="item.orderState === 3" href="javascript:" class="green">
+        <a
+          @click="$emit('viewLogistics', item.id)"
+          v-if="item.orderState === 3"
+          href="javascript:"
+          class="green"
+        >
           查看物流
         </a>
         <a v-if="item.orderState === 4" href="javascript:" class="green">
@@ -63,13 +124,23 @@ if (props.item.orderState === 1) {
         <XtxButton v-if="item.orderState === 1" type="primary" size="small">
           立即付款
         </XtxButton>
-        <XtxButton v-if="item.orderState === 3" type="primary" size="small">
+        <XtxButton
+          @click="confimReceipt(item.id)"
+          v-if="item.orderState === 3"
+          type="primary"
+          size="small"
+        >
           确认收货
         </XtxButton>
         <p v-if="[1, 2, 3, 4, 5, 6].includes(item.orderState)">
-          <a href="javascript:">查看详情</a>
+          <RouterLink :to="`/member/order/${item.id}`">查看详情</RouterLink>
         </p>
-        <p v-if="item.orderState === 1"><a href="javascript:">取消订单</a></p>
+        <p
+          @click="$emit('onCancelButton', item.id)"
+          v-if="item.orderState === 1"
+        >
+          <a href="javascript:">取消订单</a>
+        </p>
         <p v-if="[2, 3, 4, 5].includes(item.orderState)">
           <a href="javascript:">再次购买</a>
         </p>

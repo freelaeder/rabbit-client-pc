@@ -7,6 +7,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AccountLogin: typeof import('./src/views/login/components/AccountLogin.vue')['default']
     AllSubCategories: typeof import('./src/views/category/components/AllSubCategories.vue')['default']
+    CancelOrder: typeof import('./src/views/member/order/components/CancelOrder.vue')['default']
     CartPage: typeof import('./src/views/cart/CartPage.vue')['default']
     CartSku: typeof import('./src/views/cart/components/CartSku.vue')['default']
     CheckoutPage: typeof import('./src/views/pay/CheckoutPage.vue')['default']
@@ -48,6 +49,8 @@ declare module '@vue/runtime-core' {
     OrderDetailPage: typeof import('./src/views/member/order/OrderDetailPage.vue')['default']
     OrderItem: typeof import('./src/views/member/order/components/OrderItem.vue')['default']
     OrderListPage: typeof import('./src/views/member/order/OrderListPage.vue')['default']
+    OrderLogistics: typeof import('./src/views/member/order/components/OrderLogistics.vue')['default']
+    OrderStatus: typeof import('./src/views/member/order/components/OrderStatus.vue')['default']
     PayPage: typeof import('./src/views/pay/PayPage.vue')['default']
     PayResultPage: typeof import('./src/views/pay/PayResultPage.vue')['default']
     QQLoginBack: typeof import('./src/views/login/QQLoginBack.vue')['default']

@@ -129,3 +129,29 @@ export interface SubmitOrderResponse {
 }
 
 export type OrderState = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+// 物流信息
+export interface LogisticsResponse {
+  // 商品数量
+  count: number;
+  // 商品图片
+  picture: string;
+  // 快递公司信息
+  company: {
+    // 公司名称
+    name: string;
+    // 快递编号
+    number: string;
+    // 联系方式
+    tel: string;
+  };
+  // 物流日志
+  list: {
+    // 信息 id
+    id: string;
+    // 信息文字
+    text: string;
+    // 信息时间
+    time: string;
+  }[];
+}

@@ -14,6 +14,25 @@ const reqParams = ref<{ orderState: OrderState }>({ orderState: 0 });
 watchEffect(() => {
   orderStore.getMyOrderList(1, 10, reqParams.value.orderState);
 });
+
+// 取消订单组件实列
+const cancelInstance = ref();
+// 物流信息弹框 实列
+const orderLogisticsInstance = ref();
+// 取消订单弹框
+function cancelOrder(id: string) {
+  // 控制订单取消弹框显示
+  cancelInstance.value.visible = true;
+  // 传递取消的订单id
+  cancelInstance.value.orderId = id;
+}
+// 显示物流弹框
+function viewLogistics(id: string) {
+  // 控制物流弹框显示
+  orderLogisticsInstance.value.visible = true;
+  // 获取当前的物流信息
+  orderStore.viewLogistics(id);
+}
 </script>
 
 <template>
@@ -42,6 +61,14 @@ watchEffect(() => {
             暂无数据
           </div>
           <OrderItem
+            @onCancelButton="cancelOrder"
+            @removeOrderList="
+              orderStore.getMyOrderList(1, 10, reqParams.orderState)
+            "
+            @confirmReceiptGoodsSuccess="
+              orderStore.getMyOrderList(1, 10, reqParams.orderState)
+            "
+            @viewLogistics="viewLogistics"
             v-for="item in orderStore.myOrderList[reqParams.orderState].result
               .items"
             :item="item"
@@ -51,6 +78,13 @@ watchEffect(() => {
       </XtxTabPane>
     </XtxTabs>
   </div>
+  <!-- 取消订单 -->
+  <CancelOrder
+    @requestOrderList="orderStore.getMyOrderList(1, 10, reqParams.orderState)"
+    ref="cancelInstance"
+  />
+  <!-- 物流信息弹框 -->
+  <OrderLogistics ref="orderLogisticsInstance" />
 </template>
 <style lang="less" scoped>
 .member-order {

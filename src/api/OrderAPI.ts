@@ -3,6 +3,7 @@ import XtxRequestManager from "@/utils/XtxRequestManager";
 import type {
   Address,
   EditAddressObject,
+  LogisticsResponse,
   OrderOfCreateResponse,
   OrderResponse,
   OrderState,
@@ -63,13 +64,44 @@ export class OrderAPI {
       data: order,
     });
   }
-
+  // 获取我的订单
   static getMyOrders(page: number, pageSize: number, orderState: OrderState) {
     return XtxRequestManager.instance.request<
       XtxResponse<Pagination<OrderResponse>>
     >({
       url: "/member/order",
       data: { page, pageSize, orderState },
+    });
+  }
+  // 取消订单
+  static cancelOrder(id: string, cancelReason: string) {
+    return XtxRequestManager.instance.request<XtxResponse<OrderResponse>>({
+      url: `/member/order/${id}/cancel`,
+      method: "put",
+      data: {
+        cancelReason,
+      },
+    });
+  }
+  // 删除订单
+  static removeOrder(ids: string[]) {
+    return XtxRequestManager.instance.request<XtxResponse<null>>({
+      url: "/member/order",
+      method: "delete",
+      data: { ids },
+    });
+  }
+  // 确定收货
+  static confirmReceiptGoods(id: string) {
+    return XtxRequestManager.instance.request<XtxResponse<OrderResponse>>({
+      url: `/member/order/${id}/receipt`,
+      method: "put",
+    });
+  }
+  // 查看物流
+  static viewLogistics(id: string) {
+    return XtxRequestManager.instance.request<XtxResponse<LogisticsResponse>>({
+      url: `/member/order/${id}/logistics`,
     });
   }
 }

@@ -47,7 +47,11 @@ watch(
     <div class="wrapper">
       <div class="header">
         <h3>{{ title }}</h3>
-        <a href="JavaScript:" class="iconfont icon-close-new"></a>
+        <a
+          @click="visibleModel = false"
+          href="JavaScript:"
+          class="iconfont icon-close-new"
+        ></a>
       </div>
       <div class="body">
         <slot name="body"></slot>
