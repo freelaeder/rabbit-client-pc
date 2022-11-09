@@ -6,12 +6,20 @@ import type { SubmitOrderObject } from "@/types/Order";
 const orderStore = useOrderStore();
 // 获取购物车 store 对象
 const cartStore = useCartStore();
-// 创建订单
-orderStore.createOrder();
+
 // 收货地址组件实列对象
 const receivingAddressInstance = ref();
 const $ = getCurrentInstance();
 const router = useRouter();
+const route = useRoute();
+// 根据路由参数中 存在id
+if (route.query.id) {
+  orderStore.createOrderById(route.query.id as string);
+} else {
+  // 创建订单
+  orderStore.createOrder();
+}
+
 // 提交订单
 async function submitOrder() {
   // 订单对象

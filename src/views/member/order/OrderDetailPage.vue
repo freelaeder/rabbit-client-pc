@@ -44,7 +44,11 @@ orderStore.getOrderInfoById(route.params.id as string);
       ></XtxStepItem>
     </XtxSteps>
     <!-- 物流栏 -->
+    <DetailLogistics
+      v-if="[3, 4, 5].includes(orderStore.orderInfo.result.orderState!)"
+    />
     <!-- 订单商品信息 -->
+    <DetailOrderGooods />
   </div>
 </template>
 
